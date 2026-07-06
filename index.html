@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محرك بحث الكفرات - شامل الضريبة</title>
+    <style>
+        body {
+            font-family: 'Tahoma', Arial, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+        h1 {
+            color: #1a3a5c;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .sub {
+            color: #6b7a8a;
+            font-size: 14px;
+            margin-top: -5px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #d1d9e6;
+            border-radius: 12px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+            direction: ltr;
+        }
+        input:focus {
+            border-color: #0077be;
+            box-shadow: 0 0 0 3px rgba(0,119,190,0.2);
+        }
+        #resultsContainer {
+            margin-top: 20px;
+            text-align: right;
+            display: none;
+        }
+        #resultsContainer.show {
+            display: block;
+        }
+        .result-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px 18px;
+            margin-bottom: 10px;
+            border-right: 5px solid #0077be;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .result-item .size {
+            font-weight: bold;
+            font-size: 16px;
+            color: #1a3a5c;
+            flex: 2;
+            min-width: 120px;
+            direction: ltr;
+            text-align: left;
+        }
+        .result-item .brand {
+            font-size: 15px;
+            color: #2c3e50;
+            flex: 1;
+            text-align: center;
+            min-width: 80px;
+        }
+        .result-item .price-box {
+            flex: 1;
+            text-align: left;
+            min-width: 130px;
+            line-height: 1.7;
+        }
+        .price-base {
+            font-size: 13px;
+            color: #6b7a8a;
+            text-decoration: line-through;
+        }
+        .price-vat {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: white;
+            font-weight: bold;
+        }
+        .not-found {
+            color: #d32f2f;
+            font-size: 18px;
+            margin-top: 15px;
+            display: none;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .matches-info {
+            color: #1a3a5c;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: #eef6ff;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .hint {
+            color: #6b7a8a;
+            font-size: 14px;
+            margin-top: 15px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .highlight { color: #e67e22; font-weight: bold; }
+        .brand-hanmks { background: #d32f2f; }
+        .brand-wanda { background: #f9a825; color: #000; }
+        .brand-saif { background: #388e3c; }
+        .brand-arkron { background: #1976d2; }
+        .brand-redanz { background: #f57c00; }
+        .brand-santara { background: #7b1fa2; }
+        .brand-default { background: #607d8b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔍 محرك بحث الكفرات</h1>
+    <p class="sub">اكتب الأرقام فقط (مثل: <span class="highlight">1956515</span>)</p>
+
+    <input type="text" id="searchInput" placeholder="مثال: 1956515 أو 21560" autofocus autocomplete="off">
+
+    <div id="resultsContainer">
+        <div class="matches-info" id="matchesInfo"></div>
+        <div id="resultsList"></div>
+    </div>
+
+    <div id="notFound" class="not-found">✖ لا يوجد مقاس مطابق</div>
+    <div class="hint">💡 السعر <b>الأساسي</b> (مشطوب) ← السعر <b>شامل 15%</b> باللون البرتقالي</div>
+</div>
+
+<script>
+    // ===== قاعدة البيانات الكاملة =====
+    const data = [
+        ["175/70R13 82T", 85, "أركـرون"],
+        ["185/70R13 86T", 95, "هانمكس"],
+        ["185/70R13 86T", 95, "أركـرون"],
+        ["175/65R14 82H", 95, "أركـرون"],
+        ["175/65R14 82H", 95, "هانمكس"],
+        ["175/70R14 88H", 95, "أركـرون"],
+        ["175/70R14 84T", 95, "هانمكس"],
+        ["175/70R14 84T", 95, "هانمكس"],
+        ["175/70R14 84T", 95, "واندا"],
+        ["185R14C 8PR", 135, "هانمكس"],
+        ["185/70R14 88T", 100, "هانمكس"],
+        ["195R14C 8PR", 145, "هانمكس"],
+        ["195R14C 8PR", 145, "هانمكس"],
+        ["195/70R14 91T", 110, "هانمكس"],
+        ["185/65R15 88H", 105, "هانمكس"],
+        ["195R15C 8PR", 152, "واندا"],
+        ["195R15C 8PR", 152, "هانمكس"],
+        ["195R15C 8PR", 152, "هانمكس"],
+        ["195/65R15 91H", 108, "هانمكس"],
+        ["195/65R15 91V", 108, "أركـرون"],
+        ["195/65R15 91V", 108, "هانمكس"],
+        ["195/65R15 91H", 108, "واندا"],
+        ["205/65R15 94H", 115, "هانمكس"],
+        ["205/65R15 94V", 115, "هانمكس"],
+        ["205/65R15 94H", 115, "واندا"],
+        ["205/70R15 96T", 125, "هانمكس"],
+        ["205/70R15C", 155, "واندا"],
+        ["205/70R15C", 155, "هانمكس"],
+        ["225/70R15B 100H", 175, "هانمكس"],
+        ["255/70R15C", 210, "واندا"],
+        ["255/70R15C 8PR", 210, "هانمكس"],
+        ["255/70R15C 8PR", 210, "هانمكس"],
+        ["205R16C 8PR", 195, "واندا"],
+        ["205/55R16 91V", 105, "هانمكس"],
+        ["205/55R16 91V", 105, "أركـرون"],
+        ["205/65R16 95H", 125, "هانمكس"],
+        ["215/60R16 95V", 125, "واندا"],
+        ["215/60R16 95H", 125, "هانمكس"],
+        ["215/60R16 95H", 125, "هانمكس"],
+        ["215/60R16 95H", 125, "هانمكس"],
+        ["215/65R16 98H", 138, "هانمكس"],
+        ["215/65R16 98H", 138, "هانمكس"],
+        ["215/70R16 100H", 155, "سيف ريتش"],
+        ["225/60R16 102H XL", 145, "ريدانز"],
+        ["225/70R16 103T", 165, "سيف ريتش"],
+        ["225/95R16C 8PR حجري", 250, "هانمكس"],
+        ["225/95R16C 8PR رملي", 260, "هانمكس"],
+        ["235/70R16 106T", 190, "سيف ريتش"],
+        ["245/70R16 107H", 190, "واندا"],
+        ["245/70R16 107T", 190, "سيف ريتش"],
+        ["245/70R16 107H", 190, "هانمكس"],
+        ["245/85R16 114S", 285, "واندا"],
+        ["265/70R16 112T", 215, "واندا"],
+        ["265/70R16 112T", 215, "هانمكس"],
+        ["275/70R16 114T", 230, "واندا"],
+        ["275/70R16 114T", 230, "هانمكس"],
+        ["700R16C 12PR", 270, "هانمكس"],
+        ["7.50R16LT 10PR", 270, "هانمكس"],
+        ["750R16C 10PR", 270, "هانمكس"],
+        ["205/50ZR17 93W", 125, "أركـرون"],
+        ["215/50ZR17 95W", 130, "أركـرون"],
+        ["215/55ZR17 98W", 140, "أركـرون"],
+        ["215/55R17 98W", 140, "هانمكس"],
+        ["215/55ZR17 98W XL", 140, "هانمكس"],
+        ["215/60R17 96H", 160, "هانمكس"],
+        ["215/60R17 96H", 160, "ريدانز"],
+        ["225/45ZR17 94W", 135, "أركـرون"],
+        ["225/50ZR17 98W", 145, "أركـرون"],
+        ["225/50ZR17 98W XL", 145, "هانمكس"],
+        ["225/55ZR17 97W", 145, "أركـرون"],
+        ["225/55ZR17 101W", 145, "أركـرون"],
+        ["225/60R17 99V", 155, "ريدانز"],
+        ["225/65R17 102H", 165, "ريدانز"],
+        ["235/55R17 99V", 165, "ريدانز"],
+        ["235/65R17 108H", 175, "سيف ريتش"],
+        ["245/65R17 111H", 195, "سيف ريتش"],
+        ["245/65R17 111H", 195, "هانمكس"],
+        ["245/75R17 121/118S", 310, "ريدانز"],
+        ["265/65R17 112S", 220, "واندا"],
+        ["265/70R17 115T", 225, "سيف ريتش"],
+        ["265/70R17 115T", 225, "ريدانز"],
+        ["275/65R17 115T", 225, "واندا"],
+        ["285/65R17 116T", 245, "واندا"],
+        ["225/40ZR18 92W", 140, "أركـرون"],
+        ["235/45ZR18 98W XL", 150, "ريدانز"],
+        ["235/50ZR18 101W", 170, "سيف ريتش"],
+        ["235/50ZR18 101W XL", 170, "واندا"],
+        ["235/55R18 104V XL", 175, "هانمكس"],
+        ["235/55R18 104V XL", 175, "هانمكس"],
+        ["235/60R18 107H", 190, "سيف ريتش"],
+        ["245/45ZR18 100W XL", 160, "هانمكس"],
+        ["245/50ZR18 104W XL", 200, "ريدانز"],
+        ["255/70R18 113H", 240, "واندا"],
+        ["265/65R18 114H", 240, "واندا"],
+        ["265/65R18 114H", 235, "هانمكس"],
+        ["275/65R18 116H", 240, "واندا"],
+        ["285/60R18 116", 240, "واندا"],
+        ["225/45ZR19 96W XL", 155, "واندا"],
+        ["225/45ZR19 96W", 155, "سيف ريتش"],
+        ["235/50ZR19 103W XL", 220, "ريدانز"],
+        ["235/55R19 101W", 190, "هانمكس"],
+        ["235/55R19 101V", 190, "سيف ريتش"],
+        ["245/40ZR19 98W", 180, "سيف ريتش"],
+        ["245/45ZR19 102W", 180, "سيف ريتش"],
+        ["245/55R19 103V", 190, "أركـرون"],
+        ["265/55R19 109V", 240, "هانمكس"],
+        ["275/35ZR19 96W", 240, "ريدانز"],
+        ["275/40ZR19 101Y", 240, "ريدانز"],
+        ["245/40R20", 190, "سنتارا"],
+        ["245/45R20 91V", 190, "أركـرون"],
+        ["245/50R20", 220, "سيف ريتش"],
+        ["245/50ZR20 105W XL", 220, "واندا"],
+        ["245/50ZR20 105W XL", 220, "هانمكس"],
+        ["255/50R20 109V XL", 225, "ريدانز"],
+        ["265/55R20 113V XL", 260, "هانمكس"],
+        ["275/35R20", 210, "سنتارا"],
+        ["275/50R20", 285, "سنتارا"],
+        ["275/55R20", 285, "سنتارا"],
+        ["275/60R20", 290, "سنتارا"],
+        ["285/50R20 116V", 260, "هانمكس"],
+        ["285/50R20 116V XL", 260, "واندا"],
+        ["285/50R20 116V XL", 260, "هانmكس"],
+        ["285/45R22 114V XL", 280, "ريدانز"],
+        ["275/50R22", 300, "سنتارا"]
+    ];
+
+    // ===== عناصر الصفحة =====
+    const input = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const resultsList = document.getElementById('resultsList');
+    const matchesInfo = document.getElementById('matchesInfo');
+    const notFoundDiv = document.getElementById('notFound');
+
+    function getNumbers(str) {
+        return str.replace(/[^0-9]/g, '');
+    }
+
+    function getBrandClass(brand) {
+        if (brand.includes('هانمكس')) return 'brand-hanmks';
+        if (brand.includes('واندا')) return 'brand-wanda';
+        if (brand.includes('سيف ريتش')) return 'brand-saif';
+        if (brand.includes('أركـرون')) return 'brand-arkron';
+        if (brand.includes('ريدانز')) return 'brand-redanz';
+        if (brand.includes('سنتارا')) return 'brand-santara';
+        return 'brand-default';
+    }
+
+    // دالة عرض النتائج وحساب السعر شامل الضريبة
+    function displayResults(matches, query) {
+        if (matches.length === 0) {
+            resultsContainer.classList.remove('show');
+            notFoundDiv.style.display = 'block';
+            notFoundDiv.textContent = '✖ لا يوجد مقاس يحتوي على الأرقام المكتوبة.';
+            return;
+        }
+
+        notFoundDiv.style.display = 'none';
+        resultsContainer.classList.add('show');
+
+        if (matches.length === 1) {
+            matchesInfo.textContent = '✅ تم العثور على نتيجة واحدة مطابقة';
+        } else {
+            matchesInfo.textContent = '🔄 تم العثور على ' + matches.length + ' نتيجة مقترحة للبحث:';
+        }
+
+        let html = '';
+        matches.forEach((item, index) => {
+            const brandClass = getBrandClass(item[2]);
+            const basePrice = item[1];
+            const vatPrice = Math.round(basePrice * 1.15); // إضافة ضريبة 15%
+
+            html += `
+                <div class="result-item">
+                    <span class="size">${index + 1}. ${item[0]}</span>
+                    <span class="brand"><span class="badge ${brandClass}">${item[2]}</span></span>
+                    <span class="price-box">
+                        <div class="price-base">💰 ${basePrice} ريال (قبل الضريبة)</div>
+                        <div class="price-vat">🛒 شامل 15%: ${vatPrice} ريال</div>
+                    </span>
+                </div>
+            `;
+        });
+        resultsList.innerHTML = html;
+    }
+
+    // دالة معالجة وتدقيق البحث الفوري
+    function searchTire() {
+        const query = input.value.trim();
+        
+        // إذا كانت خانة البحث فارغة، نخفي النتائج تماماً
+        if (!query) {
+            resultsContainer.classList.remove('show');
+            notFoundDiv.style.display = 'none';
+            return;
+        }
+
+        // استخراج الأرقام فقط المدخلة من المستخدم
+        const queryDigits = getNumbers(query);
+        if (queryDigits.length === 0) {
+            resultsContainer.classList.remove('show');
+            notFoundDiv.style.display = 'block';
+            notFoundDiv.textContent = '✖ الرجاء كتابة أرقام فقط للبحث السريع';
+            return;
+        }
+
+        // فلترة قاعدة البيانات بناءً على الأرقام المتسلسلة
+        let partialMatches = data.filter(item => {
+            const itemDigits = getNumbers(item[0]);
+            return itemDigits.includes(queryDigits);
+        });
+
+        // ترتيب المقاسات تصاعدياً لسهولة القراءة
+        partialMatches.sort((a, b) => a[0].localeCompare(b[0]));
+
+        // عرض النتائج المستخرجة
+        if (partialMatches.length > 0) {
+            displayResults(partialMatches, queryDigits);
+        } else {
+            resultsContainer.classList.remove('show');
+            notFoundDiv.style.display = 'block';
+            notFoundDiv.textContent = '✖ لا يوجد مقاس يحتوي على الأرقام: ' + queryDigits;
+        }
+    }
+
+    // تشغيل البحث فوراً أثناء الكتابة (الحدث الأسرع والأكثر استقراراً في المتصفحات)
+    input.addEventListener('input', searchTire);
+</script>
+</body>
+</html>
