@@ -76,8 +76,6 @@
             color: #1a3a5c;
             flex: 2;
             min-width: 120px;
-            direction: ltr;
-            text-align: left;
         }
         .result-item .brand {
             font-size: 15px;
@@ -93,36 +91,32 @@
             line-height: 1.7;
         }
         .price-base {
-            font-size: 13px;
+            font-size: 15px;
             color: #6b7a8a;
             text-decoration: line-through;
         }
         .price-vat {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             color: #e67e22;
         }
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: 12px;
             font-size: 13px;
             color: white;
-            font-weight: bold;
+            margin-right: 5px;
         }
         .not-found {
             color: #d32f2f;
             font-size: 18px;
             margin-top: 15px;
             display: none;
-            background: #ffebee;
-            padding: 10px;
-            border-radius: 8px;
         }
         .matches-info {
-            color: #1a3a5c;
+            color: #6b7a8a;
             font-size: 14px;
-            font-weight: bold;
             margin-bottom: 15px;
             background: #eef6ff;
             padding: 8px;
@@ -140,9 +134,9 @@
         .brand-hanmks { background: #d32f2f; }
         .brand-wanda { background: #f9a825; color: #000; }
         .brand-saif { background: #388e3c; }
-        .brand-arkron { background: #1976d2; }
+        .brand-arkron { background: #2e7d32; }
         .brand-redanz { background: #f57c00; }
-        .brand-santara { background: #7b1fa2; }
+        .brand-santara { background: #1565c0; }
         .brand-default { background: #607d8b; }
     </style>
 </head>
@@ -152,7 +146,7 @@
     <h1>🔍 محرك بحث الكفرات</h1>
     <p class="sub">اكتب الأرقام فقط (مثل: <span class="highlight">1956515</span>)</p>
 
-    <input type="text" id="searchInput" placeholder="مثال: 1956515 أو 21560" autofocus autocomplete="off">
+    <input type="text" id="searchInput" placeholder="مثال: 1956515 أو 21560" autofocus>
 
     <div id="resultsContainer">
         <div class="matches-info" id="matchesInfo"></div>
@@ -164,7 +158,7 @@
 </div>
 
 <script>
-    // ===== قاعدة البيانات الكاملة =====
+    // ===== قاعدة البيانات المحدثة =====
     const data = [
         ["175/70R13 82T", 85, "أركـرون"],
         ["185/70R13 86T", 95, "هانمكس"],
@@ -184,34 +178,35 @@
         ["195R15C 8PR", 152, "واندا"],
         ["195R15C 8PR", 152, "هانمكس"],
         ["195R15C 8PR", 152, "هانمكس"],
-        ["195/65R15 91H", 108, "هانمكس"],
-        ["195/65R15 91V", 108, "أركـرون"],
-        ["195/65R15 91V", 108, "هانمكس"],
-        ["195/65R15 91H", 108, "واندا"],
-        ["205/65R15 94H", 115, "هانمكس"],
-        ["205/65R15 94V", 115, "هانمكس"],
-        ["205/65R15 94H", 115, "واندا"],
-        ["205/70R15 96T", 125, "هانمكس"],
+        ["195/65R15 91H", 115, "هانمكس"],
+        ["195/65R15 91V", 115, "أركـرون"],
+        ["195/65R15 91V", 115, "هانمكس"],
+        ["195/65R15 91H", 115, "واندا"],
+        ["205/65R15 94H", 120, "هانمكس"],
+        ["205/65R15 94V", 120, "هانمكس"],
+        ["205/65R15 94H", 120, "واندا"],
+        ["205/70R15 96T (عادي)", 125, "هانمكس"],  // عادي
+        ["205/70R15 96T (8 طبقات)", 165, "هانمكس"], // 8 طبقات
         ["205/70R15C", 155, "واندا"],
         ["205/70R15C", 155, "هانمكس"],
-        ["225/70R15B 100H", 175, "هانمكس"],
+        ["225/70R15B 100H", 180, "هانمكس"],
         ["255/70R15C", 210, "واندا"],
         ["255/70R15C 8PR", 210, "هانمكس"],
         ["255/70R15C 8PR", 210, "هانمكس"],
         ["205R16C 8PR", 195, "واندا"],
-        ["205/55R16 91V", 105, "هانمكس"],
-        ["205/55R16 91V", 105, "أركـرون"],
+        ["205/55R16 91V", 115, "هانمكس"],
+        ["205/55R16 91V", 115, "أركـرون"],
         ["205/65R16 95H", 125, "هانمكس"],
         ["215/60R16 95V", 125, "واندا"],
         ["215/60R16 95H", 125, "هانمكس"],
         ["215/60R16 95H", 125, "هانمكس"],
         ["215/60R16 95H", 125, "هانمكس"],
-        ["215/65R16 98H", 138, "هانمكس"],
-        ["215/65R16 98H", 138, "هانمكس"],
+        ["215/65R16 98H", 145, "هانمكس"],
+        ["215/65R16 98H", 145, "هانمكس"],
         ["215/70R16 100H", 155, "سيف ريتش"],
         ["225/60R16 102H XL", 145, "ريدانز"],
         ["225/70R16 103T", 165, "سيف ريتش"],
-        ["225/95R16C 8PR حجري", 250, "هانمكس"],
+        ["225/95R16C 8PR حجري", 260, "هانمكس"],
         ["225/95R16C 8PR رملي", 260, "هانمكس"],
         ["235/70R16 106T", 190, "سيف ريتش"],
         ["245/70R16 107H", 190, "واندا"],
@@ -235,8 +230,8 @@
         ["225/45ZR17 94W", 135, "أركـرون"],
         ["225/50ZR17 98W", 145, "أركـرون"],
         ["225/50ZR17 98W XL", 145, "هانمكس"],
-        ["225/55ZR17 97W", 145, "أركـرون"],
-        ["225/55ZR17 101W", 145, "أركـرون"],
+        ["225/55ZR17 97W", 150, "أركـرون"],
+        ["225/55ZR17 101W", 150, "أركـرون"],
         ["225/60R17 99V", 155, "ريدانز"],
         ["225/65R17 102H", 165, "ريدانز"],
         ["235/55R17 99V", 165, "ريدانز"],
@@ -287,12 +282,12 @@
         ["275/60R20", 290, "سنتارا"],
         ["285/50R20 116V", 260, "هانمكس"],
         ["285/50R20 116V XL", 260, "واندا"],
-        ["285/50R20 116V XL", 260, "هانmكس"],
+        ["285/50R20 116V XL", 260, "هانمكس"],
         ["285/45R22 114V XL", 280, "ريدانز"],
         ["275/50R22", 300, "سنتارا"]
     ];
 
-    // ===== عناصر الصفحة =====
+    // ===== باقي الكود (بدون تغيير) =====
     const input = document.getElementById('searchInput');
     const resultsContainer = document.getElementById('resultsContainer');
     const resultsList = document.getElementById('resultsList');
@@ -313,12 +308,11 @@
         return 'brand-default';
     }
 
-    // دالة عرض النتائج وحساب السعر شامل الضريبة
     function displayResults(matches, query) {
         if (matches.length === 0) {
             resultsContainer.classList.remove('show');
             notFoundDiv.style.display = 'block';
-            notFoundDiv.textContent = '✖ لا يوجد مقاس يحتوي على الأرقام المكتوبة.';
+            notFoundDiv.textContent = '✖ لا يوجد مقاس يحتوي على: ' + query;
             return;
         }
 
@@ -326,20 +320,20 @@
         resultsContainer.classList.add('show');
 
         if (matches.length === 1) {
-            matchesInfo.textContent = '✅ تم العثور على نتيجة واحدة مطابقة';
+            matchesInfo.textContent = '✅ تم العثور على نتيجة واحدة';
         } else {
-            matchesInfo.textContent = '🔄 تم العثور على ' + matches.length + ' نتيجة مقترحة للبحث:';
+            matchesInfo.textContent = '🔄 تم العثور على ' + matches.length + ' نتيجة للمقاسات المتشابهة:';
         }
 
         let html = '';
         matches.forEach((item, index) => {
             const brandClass = getBrandClass(item[2]);
             const basePrice = item[1];
-            const vatPrice = Math.round(basePrice * 1.15); // إضافة ضريبة 15%
+            const vatPrice = Math.round(basePrice * 1.15);
 
             html += `
                 <div class="result-item">
-                    <span class="size">${index + 1}. ${item[0]}</span>
+                    <span class="size">${index+1}. ${item[0]}</span>
                     <span class="brand"><span class="badge ${brandClass}">${item[2]}</span></span>
                     <span class="price-box">
                         <div class="price-base">💰 ${basePrice} ريال (قبل الضريبة)</div>
@@ -351,36 +345,35 @@
         resultsList.innerHTML = html;
     }
 
-    // دالة معالجة وتدقيق البحث الفوري
     function searchTire() {
         const query = input.value.trim();
-        
-        // إذا كانت خانة البحث فارغة، نخفي النتائج تماماً
         if (!query) {
             resultsContainer.classList.remove('show');
             notFoundDiv.style.display = 'none';
             return;
         }
 
-        // استخراج الأرقام فقط المدخلة من المستخدم
+        let exactMatches = data.filter(item => item[0] === query);
+        if (exactMatches.length > 0) {
+            displayResults(exactMatches, query);
+            return;
+        }
+
         const queryDigits = getNumbers(query);
         if (queryDigits.length === 0) {
             resultsContainer.classList.remove('show');
             notFoundDiv.style.display = 'block';
-            notFoundDiv.textContent = '✖ الرجاء كتابة أرقام فقط للبحث السريع';
+            notFoundDiv.textContent = '✖ الرجاء كتابة أرقام فقط';
             return;
         }
 
-        // فلترة قاعدة البيانات بناءً على الأرقام المتسلسلة
         let partialMatches = data.filter(item => {
             const itemDigits = getNumbers(item[0]);
             return itemDigits.includes(queryDigits);
         });
 
-        // ترتيب المقاسات تصاعدياً لسهولة القراءة
         partialMatches.sort((a, b) => a[0].localeCompare(b[0]));
 
-        // عرض النتائج المستخرجة
         if (partialMatches.length > 0) {
             displayResults(partialMatches, queryDigits);
         } else {
@@ -390,8 +383,12 @@
         }
     }
 
-    // تشغيل البحث فوراً أثناء الكتابة (الحدث الأسرع والأكثر استقراراً في المتصفحات)
     input.addEventListener('input', searchTire);
+    input.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') searchTire();
+    });
+
+    input.focus();
 </script>
 </body>
 </html>
