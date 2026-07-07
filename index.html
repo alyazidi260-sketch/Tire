@@ -68,7 +68,7 @@
 <body>
 <div class="container">
     <h1>🔧 نظام إدارة المخزون</h1>
-    <p class="sub">إدارة الكفرات - الكميات - المبيعات - جميع المقاسات موديل 2026</p>
+    <p class="sub">إدارة الكفرات - الكميات - المبيعات</p>
 
     <div class="tabs">
         <button class="tab-btn active" onclick="showTab('search')">🔍 بحث</button>
@@ -125,165 +125,31 @@
     </div>
 </div>
 
+<!-- ===== تحميل ملف البيانات ===== -->
+<script src="data.js"></script>
+
 <script>
     // ============================================================
-    //  قاعدة البيانات الكاملة - جميع المقاسات (كميات 0، موديل 2026)
-    // ============================================================
-    let data = [
-        // ===== R13 =====
-        ["175/70R13 82T", 85, "أركـرون", 0, "2026"],
-        ["185/70R13 86T", 95, "هانمكس", 0, "2026"],
-        ["185/70R13 86T", 95, "أركـرون", 0, "2026"],
-        // ===== R14 =====
-        ["175/65R14 82H", 95, "أركـرون", 0, "2026"],
-        ["175/65R14 82H", 95, "هانمكس", 0, "2026"],
-        ["175/70R14 88H", 95, "أركـرون", 0, "2026"],
-        ["175/70R14 84T", 95, "هانمكس", 0, "2026"],
-        ["175/70R14 84T", 95, "هانمكس", 0, "2026"],
-        ["175/70R14 84T", 95, "واندا", 0, "2026"],
-        ["185R14C 8PR", 135, "هانمكس", 0, "2026"],
-        ["185/70R14 88T", 100, "هانمكس", 0, "2026"],
-        ["195R14C 8PR", 145, "هانمكس", 0, "2026"],
-        ["195R14C 8PR", 145, "هانمكس", 0, "2026"],
-        ["195/70R14 91T", 110, "هانمكس", 0, "2026"],
-        // ===== R15 =====
-        ["185/65R15 88H", 105, "هانمكس", 0, "2026"],
-        ["195R15C 8PR", 152, "واندا", 0, "2026"],
-        ["195R15C 8PR", 152, "هانمكس", 0, "2026"],
-        ["195R15C 8PR", 152, "هانمكس", 0, "2026"],
-        ["195/65R15 91H", 115, "هانمكس", 0, "2026"],
-        ["195/65R15 91V", 115, "أركـرون", 0, "2026"],
-        ["195/65R15 91V", 115, "هانمكس", 0, "2026"],
-        ["195/65R15 91H", 115, "واندا", 0, "2026"],
-        ["205/65R15 94H", 120, "هانمكس", 0, "2026"],
-        ["205/65R15 94V", 120, "هانمكس", 0, "2026"],
-        ["205/65R15 94H", 120, "واندا", 0, "2026"],
-        ["205/70R15 96T (عادي)", 125, "هانمكس", 0, "2026"],
-        ["205/70R15 96T (8 طبقات)", 165, "هانمكس", 0, "2026"],
-        ["205/70R15C", 155, "واندا", 0, "2026"],
-        ["205/70R15C", 155, "هانمكس", 0, "2026"],
-        ["225/70R15B 100H", 180, "هانمكس", 0, "2026"],
-        ["255/70R15C", 210, "واندا", 0, "2026"],
-        ["255/70R15C 8PR", 210, "هانمكس", 0, "2026"],
-        ["255/70R15C 8PR", 210, "هانمكس", 0, "2026"],
-        // ===== R16 =====
-        ["205R16C 8PR", 195, "واندا", 0, "2026"],
-        ["205/55R16 91V", 115, "هانمكس", 0, "2026"],
-        ["205/55R16 91V", 115, "أركـرون", 0, "2026"],
-        ["205/65R16 95H", 125, "هانمكس", 0, "2026"],
-        ["215/60R16 95V", 125, "واندا", 0, "2026"],
-        ["215/60R16 95H", 125, "هانمكس", 0, "2026"],
-        ["215/60R16 95H", 125, "هانمكس", 0, "2026"],
-        ["215/60R16 95H", 125, "هانمكس", 0, "2026"],
-        ["215/65R16 98H", 145, "هانمكس", 0, "2026"],
-        ["215/65R16 98H", 145, "هانمكس", 0, "2026"],
-        ["215/70R16 100H", 155, "سيف ريتش", 0, "2026"],
-        ["225/60R16 102H XL", 145, "ريدانز", 0, "2026"],
-        ["225/70R16 103T", 165, "سيف ريتش", 0, "2026"],
-        ["225/95R16C 8PR حجري", 260, "هانمكس", 0, "2026"],
-        ["225/95R16C 8PR رملي", 260, "هانمكس", 0, "2026"],
-        ["235/70R16 106T", 190, "سيف ريتش", 0, "2026"],
-        ["245/70R16 107H", 190, "واندا", 0, "2026"],
-        ["245/70R16 107T", 190, "سيف ريتش", 0, "2026"],
-        ["245/70R16 107H", 190, "هانمكس", 0, "2026"],
-        ["245/85R16 114S", 285, "واندا", 0, "2026"],
-        ["265/70R16 112T", 215, "واندا", 0, "2026"],
-        ["265/70R16 112T", 215, "هانمكس", 0, "2026"],
-        ["275/70R16 114T", 230, "واندا", 0, "2026"],
-        ["275/70R16 114T", 230, "هانمكس", 0, "2026"],
-        ["700R16C 12PR", 270, "هانمكس", 0, "2026"],
-        ["7.50R16LT 10PR", 270, "هانمكس", 0, "2026"],
-        ["750R16C 10PR", 270, "هانمكس", 0, "2026"],
-        // ===== R17 =====
-        ["205/50ZR17 93W", 125, "أركـرون", 0, "2026"],
-        ["215/50ZR17 95W", 130, "أركـرون", 0, "2026"],
-        ["215/55ZR17 98W", 140, "أركـرون", 0, "2026"],
-        ["215/55R17 98W", 140, "هانمكس", 0, "2026"],
-        ["215/55ZR17 98W XL", 140, "هانمكس", 0, "2026"],
-        ["215/60R17 96H", 160, "هانمكس", 0, "2026"],
-        ["215/60R17 96H", 160, "ريدانز", 0, "2026"],
-        ["225/45ZR17 94W", 135, "أركـرون", 0, "2026"],
-        ["225/50ZR17 98W", 145, "أركـرون", 0, "2026"],
-        ["225/50ZR17 98W XL", 145, "هانمكس", 0, "2026"],
-        ["225/55ZR17 97W", 150, "أركـرون", 0, "2026"],
-        ["225/55ZR17 101W", 150, "أركـرون", 0, "2026"],
-        ["225/60R17 99V", 155, "ريدانز", 0, "2026"],
-        ["225/65R17 102H", 165, "ريدانز", 0, "2026"],
-        ["235/55R17 99V", 165, "ريدانز", 0, "2026"],
-        ["235/65R17 108H", 175, "سيف ريتش", 0, "2026"],
-        ["245/65R17 111H", 195, "سيف ريتش", 0, "2026"],
-        ["245/65R17 111H", 195, "هانمكس", 0, "2026"],
-        ["245/75R17 121/118S", 310, "ريدانز", 0, "2026"],
-        ["265/65R17 112S", 220, "واندا", 0, "2026"],
-        ["265/70R17 115T", 225, "سيف ريتش", 0, "2026"],
-        ["265/70R17 115T", 225, "ريدانز", 0, "2026"],
-        ["275/65R17 115T", 225, "واندا", 0, "2026"],
-        ["285/65R17 116T", 245, "واندا", 0, "2026"],
-        // ===== R18 =====
-        ["225/40ZR18 92W", 140, "أركـرون", 0, "2026"],
-        ["235/45ZR18 98W XL", 150, "ريدانز", 0, "2026"],
-        ["235/50ZR18 101W", 170, "سيف ريتش", 0, "2026"],
-        ["235/50ZR18 101W XL", 170, "واندا", 0, "2026"],
-        ["235/55R18 104V XL", 175, "هانمكس", 0, "2026"],
-        ["235/55R18 104V XL", 175, "هانمكس", 0, "2026"],
-        ["235/60R18 107H", 190, "سيف ريتش", 0, "2026"],
-        ["245/45ZR18 100W XL", 160, "هانمكس", 0, "2026"],
-        ["245/50ZR18 104W XL", 200, "ريدانز", 0, "2026"],
-        ["255/70R18 113H", 240, "واندا", 0, "2026"],
-        ["265/65R18 114H", 240, "واندا", 0, "2026"],
-        ["265/65R18 114H", 235, "هانمكس", 0, "2026"],
-        ["275/65R18 116H", 240, "واندا", 0, "2026"],
-        ["285/60R18 116", 240, "واندا", 0, "2026"],
-        // ===== R19 =====
-        ["225/45ZR19 96W XL", 155, "واندا", 0, "2026"],
-        ["225/45ZR19 96W", 155, "سيف ريتش", 0, "2026"],
-        ["235/50ZR19 103W XL", 220, "ريدانز", 0, "2026"],
-        ["235/55R19 101W", 190, "هانمكس", 0, "2026"],
-        ["235/55R19 101V", 190, "سيف ريتش", 0, "2026"],
-        ["245/40ZR19 98W", 180, "سيف ريتش", 0, "2026"],
-        ["245/45ZR19 102W", 180, "سيف ريتش", 0, "2026"],
-        ["245/55R19 103V", 190, "أركـرون", 0, "2026"],
-        ["265/55R19 109V", 240, "هانمكس", 0, "2026"],
-        ["275/35ZR19 96W", 240, "ريدانز", 0, "2026"],
-        ["275/40ZR19 101Y", 240, "ريدانز", 0, "2026"],
-        // ===== R20 =====
-        ["245/40R20", 190, "سنتارا", 0, "2026"],
-        ["245/45R20 91V", 190, "أركـرون", 0, "2026"],
-        ["245/50R20", 220, "سيف ريتش", 0, "2026"],
-        ["245/50ZR20 105W XL", 220, "واندا", 0, "2026"],
-        ["245/50ZR20 105W XL", 220, "هانمكس", 0, "2026"],
-        ["255/50R20 109V XL", 225, "ريدانز", 0, "2026"],
-        ["265/55R20 113V XL", 260, "هانمكس", 0, "2026"],
-        ["275/35R20", 210, "سنتارا", 0, "2026"],
-        ["275/50R20", 285, "سنتارا", 0, "2026"],
-        ["275/55R20", 285, "سنتارا", 0, "2026"],
-        ["275/60R20", 290, "سنتارا", 0, "2026"],
-        ["285/50R20 116V", 260, "هانمكس", 0, "2026"],
-        ["285/50R20 116V XL", 260, "واندا", 0, "2026"],
-        ["285/50R20 116V XL", 260, "هانمكس", 0, "2026"],
-        // ===== R22 =====
-        ["285/45R22 114V XL", 280, "ريدانز", 0, "2026"],
-        ["275/50R22", 300, "سنتارا", 0, "2026"]
-    ];
-
-    // ============================================================
-    //  تحميل البيانات من Local Storage
+    //  تحميل البيانات من Local Storage أو من data.js
     // ============================================================
     function loadData() {
         const saved = localStorage.getItem('tireData');
         if (saved) {
             try {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    data = parsed;
-                }
+                window.tireData = JSON.parse(saved);
+                return;
             } catch (e) {}
+        }
+        if (typeof defaultTireData !== 'undefined' && defaultTireData.length > 0) {
+            window.tireData = JSON.parse(JSON.stringify(defaultTireData));
+        } else {
+            window.tireData = [];
         }
         saveData();
     }
 
     function saveData() {
-        localStorage.setItem('tireData', JSON.stringify(data));
+        localStorage.setItem('tireData', JSON.stringify(window.tireData));
     }
 
     // ============================================================
@@ -333,6 +199,7 @@
         notFound.style.display = 'none';
         let html = '<div class="search-result-count">🔍 تم العثور على ' + matches.length + ' نتيجة</div>';
         matches.forEach((item, index) => {
+            const globalIndex = window.tireData.indexOf(item);
             const brandClass = getBrandClass(item[2]);
             const basePrice = item[1];
             const vatPrice = Math.round(basePrice * 1.15);
@@ -351,10 +218,10 @@
                         <div class="price-vat">🛒 شامل 15%: ${vatPrice} ريال</div>
                         <div class="stock-badge ${stockClass}">${stockText}</div>
                         <div style="margin-top:6px;">
-                            <button class="action-btn sell" onclick="sellItem(${index})">🔻 بيع</button>
-                            <button class="action-btn add" onclick="addStock(${index})">➕ إضافة</button>
-                            <button class="action-btn edit" onclick="openEditModal(${index})">✏️ تعديل</button>
-                            <button class="action-btn delete" onclick="deleteItem(${index})">🗑️ حذف</button>
+                            <button class="action-btn sell" onclick="sellItem(${globalIndex})">🔻 بيع</button>
+                            <button class="action-btn add" onclick="addStock(${globalIndex})">➕ إضافة</button>
+                            <button class="action-btn edit" onclick="openEditModal(${globalIndex})">✏️ تعديل</button>
+                            <button class="action-btn delete" onclick="deleteItem(${globalIndex})">🗑️ حذف</button>
                         </div>
                     </span>
                 </div>
@@ -377,6 +244,184 @@
             if (notFound) notFound.style.display = 'none';
             return;
         }
+        const data = window.tireData || [];
         const matches = data.filter(item => item[0].includes(query));
         if (matches.length > 0) {
             displayResults(matches);
+        } else {
+            if (container) container.innerHTML = '';
+            if (notFound) {
+                notFound.style.display = 'block';
+                notFound.textContent = '✖ لا يوجد مقاس يحتوي على: ' + query;
+            }
+        }
+    }
+
+    // ============================================================
+    //  عمليات المخزون
+    // ============================================================
+    function sellItem(index) {
+        const data = window.tireData;
+        const item = data[index];
+        if (!item) return;
+        if (item[3] <= 0) {
+            alert('❌ هذا المقاس غير متوفر حالياً (الكمية صفر)');
+            return;
+        }
+        const qty = prompt('كم حبة تريد بيعها من ' + item[0] + '؟ (المتوفرة: ' + item[3] + ')', '1');
+        if (qty === null) return;
+        const num = parseInt(qty);
+        if (isNaN(num) || num <= 0 || num > item[3]) {
+            alert('❌ كمية غير صالحة');
+            return;
+        }
+        data[index][3] -= num;
+        saveData();
+        searchTire();
+        renderInventory();
+        alert('✅ تم بيع ' + num + ' حبة');
+    }
+
+    function addStock(index) {
+        const data = window.tireData;
+        const item = data[index];
+        if (!item) return;
+        const qty = prompt('كم حبة تريد إضافتها إلى مخزون ' + item[0] + '؟', '1');
+        if (qty === null) return;
+        const num = parseInt(qty);
+        if (isNaN(num) || num <= 0) {
+            alert('❌ الرجاء إدخال عدد صحيح موجب');
+            return;
+        }
+        data[index][3] += num;
+        saveData();
+        searchTire();
+        renderInventory();
+        alert('✅ تم إضافة ' + num + ' حبة');
+    }
+
+    function deleteItem(index) {
+        const data = window.tireData;
+        if (!confirm('هل أنت متأكد من حذف ' + data[index][0] + ' نهائياً؟')) return;
+        data.splice(index, 1);
+        saveData();
+        searchTire();
+        renderInventory();
+    }
+
+    let editIndex = -1;
+    function openEditModal(index) {
+        editIndex = index;
+        const data = window.tireData;
+        document.getElementById('editModalTitle').textContent = '✏️ تعديل كمية: ' + data[index][0];
+        document.getElementById('editQuantity').value = data[index][3];
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function saveEdit() {
+        const data = window.tireData;
+        const newQty = parseInt(document.getElementById('editQuantity').value);
+        if (isNaN(newQty) || newQty < 0) {
+            alert('❌ الرجاء إدخال عدد صحيح غير سالب');
+            return;
+        }
+        data[editIndex][3] = newQty;
+        saveData();
+        closeModal();
+        searchTire();
+        renderInventory();
+        alert('✅ تم تحديث الكمية');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('active');
+    }
+
+    // ============================================================
+    //  إضافة مقاس جديد
+    // ============================================================
+    function addItem() {
+        const data = window.tireData;
+        const size = document.getElementById('newSize').value.trim();
+        const price = parseInt(document.getElementById('newPrice').value);
+        const brand = document.getElementById('newBrand').value.trim();
+        const qty = parseInt(document.getElementById('newQuantity').value);
+        const year = document.getElementById('newYear').value;
+        if (!size || isNaN(price) || !brand || isNaN(qty) || qty < 0) {
+            alert('❌ الرجاء تعبئة جميع الحقول بشكل صحيح');
+            return;
+        }
+        data.push([size, price, brand, qty, year]);
+        saveData();
+        document.getElementById('newSize').value = '';
+        document.getElementById('newPrice').value = '';
+        document.getElementById('newBrand').value = '';
+        document.getElementById('newQuantity').value = '';
+        renderInventory();
+        alert('✅ تم إضافة ' + size + ' بنجاح');
+    }
+
+    // ============================================================
+    //  عرض المخزون
+    // ============================================================
+    function renderInventory() {
+        const container = document.getElementById('inventoryList');
+        if (!container) return;
+        const data = window.tireData || [];
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="text-align:center;color:#6b7a8a;">📭 لا يوجد مقاسات في المخزون</p>';
+            return;
+        }
+        let html = `<table><thead><tr><th>#</th><th>المقاس</th><th>العلامة</th><th>السعر</th><th>الكمية</th><th>السنة</th><th>الإجراءات</th></tr></thead><tbody>`;
+        data.forEach((item, i) => {
+            const brandClass = getBrandClass(item[2]);
+            const stockClass = getStockClass(item[3]);
+            html += `<tr>
+                <td>${i+1}</td>
+                <td>${item[0]}</td>
+                <td><span class="badge ${brandClass}">${item[2]}</span></td>
+                <td>${item[1]} ريال</td>
+                <td><span class="stock-badge ${stockClass}">${item[3]}</span></td>
+                <td><span class="year-badge">${item[4]}</span></td>
+                <td class="table-actions">
+                    <button class="action-btn sell" onclick="sellItem(${i})">🔻 بيع</button>
+                    <button class="action-btn add" onclick="addStock(${i})">➕ إضافة</button>
+                    <button class="action-btn edit" onclick="openEditModal(${i})">✏️</button>
+                    <button class="action-btn delete" onclick="deleteItem(${i})">🗑️</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    //  عرض المبيعات
+    // ============================================================
+    function renderSales() {
+        const container = document.getElementById('salesList');
+        if (!container) return;
+        container.innerHTML = '<p style="text-align:center;color:#6b7a8a;">📭 سجل المبيعات قيد التطوير</p>';
+    }
+
+    function clearSales() {
+        alert('🗑️ سيتم مسح سجل المبيعات قريباً');
+    }
+
+    // ============================================================
+    //  تصدير البيانات
+    // ============================================================
+    function exportData() {
+        const data = window.tireData || [];
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tire_data_' + new Date().toISOString().slice(0,10) + '.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('📥 تم تصدير البيانات كملف JSON');
+    }
+
+    // =========================
