@@ -3,134 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محرك بحث الكفرات - شامل الضريبة</title>
+    <title>نظام إدارة المخزون - الكفرات</title>
     <style>
-        body {
-            font-family: 'Tahoma', Arial, sans-serif;
-            background: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 550px;
-            text-align: center;
-        }
-        h1 {
-            color: #1a3a5c;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        .sub {
-            color: #6b7a8a;
-            font-size: 14px;
-            margin-top: -5px;
-            margin-bottom: 20px;
-        }
-        input {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            border: 2px solid #d1d9e6;
-            border-radius: 12px;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-            text-align: center;
-            direction: ltr;
-        }
-        input:focus {
-            border-color: #0077be;
-            box-shadow: 0 0 0 3px rgba(0,119,190,0.2);
-        }
-        #resultsContainer {
-            margin-top: 20px;
-            text-align: right;
-            display: none;
-        }
-        #resultsContainer.show {
-            display: block;
-        }
-        .result-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px 18px;
-            margin-bottom: 10px;
-            border-right: 5px solid #0077be;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .result-item .size {
-            font-weight: bold;
-            font-size: 16px;
-            color: #1a3a5c;
-            flex: 2;
-            min-width: 120px;
-        }
-        .result-item .brand {
-            font-size: 15px;
-            color: #2c3e50;
-            flex: 1;
-            text-align: center;
-            min-width: 80px;
-        }
-        .result-item .price-box {
-            flex: 1;
-            text-align: left;
-            min-width: 130px;
-            line-height: 1.7;
-        }
-        .price-base {
-            font-size: 15px;
-            color: #6b7a8a;
-            text-decoration: line-through;
-        }
-        .price-vat {
-            font-size: 22px;
-            font-weight: bold;
-            color: #e67e22;
-        }
-        .badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: white;
-            margin-right: 5px;
-        }
-        .not-found {
-            color: #d32f2f;
-            font-size: 18px;
-            margin-top: 15px;
-            display: none;
-        }
-        .matches-info {
-            color: #6b7a8a;
-            font-size: 14px;
-            margin-bottom: 15px;
-            background: #eef6ff;
-            padding: 8px;
-            border-radius: 8px;
-        }
-        .hint {
-            color: #6b7a8a;
-            font-size: 14px;
-            margin-top: 15px;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-        }
-        .highlight { color: #e67e22; font-weight: bold; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Tahoma', Arial, sans-serif; background: #f0f4f8; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #1a3a5c; text-align: center; font-size: 24px; }
+        .sub { text-align: center; color: #6b7a8a; font-size: 14px; margin-bottom: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .tab-btn { padding: 10px 20px; border: none; border-radius: 12px; background: #e8edf3; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .tab-btn.active { background: #1a3a5c; color: white; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .search-box { width: 100%; padding: 15px; font-size: 18px; border: 2px solid #d1d9e6; border-radius: 12px; outline: none; text-align: center; }
+        .search-box:focus { border-color: #0077be; box-shadow: 0 0 0 3px rgba(0,119,190,0.2); }
+        .result-item { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 10px; border-right: 5px solid #0077be; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .result-item .size { font-weight: bold; font-size: 16px; color: #1a3a5c; flex: 2; min-width: 120px; }
+        .result-item .brand { font-size: 15px; flex: 1; min-width: 80px; }
+        .result-item .price-box { flex: 1; text-align: left; min-width: 130px; line-height: 1.7; }
+        .price-vat { font-size: 22px; font-weight: bold; color: #e67e22; }
+        .price-base { font-size: 15px; color: #6b7a8a; text-decoration: line-through; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 13px; color: white; }
+        .stock-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .stock-high { background: #4caf50; color: white; }
+        .stock-medium { background: #ff9800; color: white; }
+        .stock-low { background: #f44336; color: white; }
+        .stock-zero { background: #9e9e9e; color: white; }
+        .year-badge { background: #1a3a5c; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+        .action-btn { padding: 6px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; color: white; margin: 2px; }
+        .action-btn.sell { background: #d32f2f; }
+        .action-btn.add { background: #4caf50; }
+        .action-btn.edit { background: #ff9800; }
+        .action-btn.delete { background: #9e9e9e; }
+        .form-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .form-group input, .form-group select { flex: 1; min-width: 100px; padding: 10px; border: 2px solid #d1d9e6; border-radius: 10px; font-size: 15px; }
+        .btn-primary { padding: 10px 25px; background: #1a3a5c; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .btn-primary:hover { background: #0d2a44; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #1a3a5c; color: white; padding: 10px; text-align: center; }
+        td { padding: 8px; border-bottom: 1px solid #e8edf3; text-align: center; }
+        .search-result-count { color: #6b7a8a; font-size: 14px; margin-bottom: 10px; }
+        .not-found { color: #d32f2f; text-align: center; padding: 20px; font-size: 18px; display: none; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; max-width: 400px; width: 90%; }
+        .modal-content h3 { margin-bottom: 15px; text-align: center; }
+        .modal-content input { width: 100%; padding: 10px; margin: 8px 0; border: 2px solid #d1d9e6; border-radius: 10px; font-size: 16px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .modal-buttons .save { background: #4caf50; }
+        .modal-buttons .cancel { background: #9e9e9e; }
         .brand-hanmks { background: #d32f2f; }
         .brand-wanda { background: #f9a825; color: #000; }
         .brand-saif { background: #388e3c; }
@@ -141,159 +63,104 @@
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>🔍 محرك بحث الكفرات</h1>
-    <p class="sub">اكتب الأرقام فقط (مثل: <span class="highlight">1956515</span>)</p>
+    <h1>🔧 نظام إدارة المخزون</h1>
+    <p class="sub">إدارة الكفرات - الكميات - المبيعات</p>
 
-    <input type="text" id="searchInput" placeholder="مثال: 1956515 أو 21560" autofocus>
-
-    <div id="resultsContainer">
-        <div class="matches-info" id="matchesInfo"></div>
-        <div id="resultsList"></div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('search')">🔍 بحث</button>
+        <button class="tab-btn" onclick="showTab('add')">➕ إضافة</button>
+        <button class="tab-btn" onclick="showTab('inventory')">📦 المخزون</button>
+        <button class="tab-btn" onclick="showTab('sales')">📊 المبيعات</button>
+        <button class="tab-btn" onclick="exportData()">📥 تصدير</button>
     </div>
 
-    <div id="notFound" class="not-found">✖ لا يوجد مقاس مطابق</div>
-    <div class="hint">💡 السعر <b>الأساسي</b> (مشطوب) ← السعر <b>شامل 15%</b> باللون البرتقالي</div>
+    <div id="tab-search" class="tab-content active">
+        <input type="text" class="search-box" id="searchInput" placeholder="اكتب المقاس (مثال: 195/65R15)" autofocus>
+        <div id="searchResults"></div>
+        <div id="notFound" class="not-found">✖ لا يوجد مقاس مطابق</div>
+    </div>
+
+    <div id="tab-add" class="tab-content">
+        <h3 style="margin-bottom:15px;">➕ إضافة مقاس جديد</h3>
+        <div class="form-group">
+            <input type="text" id="newSize" placeholder="المقاس (مثال: 195/65R15)">
+            <input type="number" id="newPrice" placeholder="السعر">
+            <input type="text" id="newBrand" placeholder="العلامة">
+        </div>
+        <div class="form-group">
+            <input type="number" id="newQuantity" placeholder="الكمية">
+            <select id="newYear">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026" selected>2026 (جديد)</option>
+            </select>
+        </div>
+        <button class="btn-primary" onclick="addItem()">➕ إضافة</button>
+    </div>
+
+    <div id="tab-inventory" class="tab-content">
+        <h3 style="margin-bottom:15px;">📦 جميع المقاسات</h3>
+        <div id="inventoryList"></div>
+    </div>
+
+    <div id="tab-sales" class="tab-content">
+        <h3 style="margin-bottom:15px;">📊 سجل المبيعات</h3>
+        <div id="salesList"></div>
+        <button class="btn-primary" onclick="clearSales()" style="margin-top:15px; background:#d32f2f;">🗑️ مسح السجل</button>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3 id="editModalTitle">تعديل الكمية</h3>
+            <input type="number" id="editQuantity" placeholder="الكمية الجديدة">
+            <div class="modal-buttons">
+                <button class="save" onclick="saveEdit()">💾 حفظ</button>
+                <button class="cancel" onclick="closeModal()">❌ إلغاء</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // ===== قاعدة البيانات المحدثة =====
-    const data = [
-        ["175/70R13 82T", 85, "أركـرون"],
-        ["185/70R13 86T", 95, "هانمكس"],
-        ["185/70R13 86T", 95, "أركـرون"],
-        ["175/65R14 82H", 95, "أركـرون"],
-        ["175/65R14 82H", 95, "هانمكس"],
-        ["175/70R14 88H", 95, "أركـرون"],
-        ["175/70R14 84T", 95, "هانمكس"],
-        ["175/70R14 84T", 95, "هانمكس"],
-        ["175/70R14 84T", 95, "واندا"],
-        ["185R14C 8PR", 135, "هانمكس"],
-        ["185/70R14 88T", 100, "هانمكس"],
-        ["195R14C 8PR", 145, "هانمكس"],
-        ["195R14C 8PR", 145, "هانمكس"],
-        ["195/70R14 91T", 110, "هانمكس"],
-        ["185/65R15 88H", 105, "هانمكس"],
-        ["195R15C 8PR", 152, "واندا"],
-        ["195R15C 8PR", 152, "هانمكس"],
-        ["195R15C 8PR", 152, "هانمكس"],
-        ["195/65R15 91H", 115, "هانمكس"],
-        ["195/65R15 91V", 115, "أركـرون"],
-        ["195/65R15 91V", 115, "هانمكس"],
-        ["195/65R15 91H", 115, "واندا"],
-        ["205/65R15 94H", 120, "هانمكس"],
-        ["205/65R15 94V", 120, "هانمكس"],
-        ["205/65R15 94H", 120, "واندا"],
-        ["205/70R15 96T (عادي)", 125, "هانمكس"],  // عادي
-        ["205/70R15 96T (8 طبقات)", 165, "هانمكس"], // 8 طبقات
-        ["205/70R15C", 155, "واندا"],
-        ["205/70R15C", 155, "هانمكس"],
-        ["225/70R15B 100H", 180, "هانمكس"],
-        ["255/70R15C", 210, "واندا"],
-        ["255/70R15C 8PR", 210, "هانمكس"],
-        ["255/70R15C 8PR", 210, "هانمكس"],
-        ["205R16C 8PR", 195, "واندا"],
-        ["205/55R16 91V", 115, "هانمكس"],
-        ["205/55R16 91V", 115, "أركـرون"],
-        ["205/65R16 95H", 125, "هانمكس"],
-        ["215/60R16 95V", 125, "واندا"],
-        ["215/60R16 95H", 125, "هانمكس"],
-        ["215/60R16 95H", 125, "هانمكس"],
-        ["215/60R16 95H", 125, "هانمكس"],
-        ["215/65R16 98H", 145, "هانمكس"],
-        ["215/65R16 98H", 145, "هانمكس"],
-        ["215/70R16 100H", 155, "سيف ريتش"],
-        ["225/60R16 102H XL", 145, "ريدانز"],
-        ["225/70R16 103T", 165, "سيف ريتش"],
-        ["225/95R16C 8PR حجري", 260, "هانمكس"],
-        ["225/95R16C 8PR رملي", 260, "هانمكس"],
-        ["235/70R16 106T", 190, "سيف ريتش"],
-        ["245/70R16 107H", 190, "واندا"],
-        ["245/70R16 107T", 190, "سيف ريتش"],
-        ["245/70R16 107H", 190, "هانمكس"],
-        ["245/85R16 114S", 285, "واندا"],
-        ["265/70R16 112T", 215, "واندا"],
-        ["265/70R16 112T", 215, "هانمكس"],
-        ["275/70R16 114T", 230, "واندا"],
-        ["275/70R16 114T", 230, "هانمكس"],
-        ["700R16C 12PR", 270, "هانمكس"],
-        ["7.50R16LT 10PR", 270, "هانمكس"],
-        ["750R16C 10PR", 270, "هانمكس"],
-        ["205/50ZR17 93W", 125, "أركـرون"],
-        ["215/50ZR17 95W", 130, "أركـرون"],
-        ["215/55ZR17 98W", 140, "أركـرون"],
-        ["215/55R17 98W", 140, "هانمكس"],
-        ["215/55ZR17 98W XL", 140, "هانمكس"],
-        ["215/60R17 96H", 160, "هانمكس"],
-        ["215/60R17 96H", 160, "ريدانز"],
-        ["225/45ZR17 94W", 135, "أركـرون"],
-        ["225/50ZR17 98W", 145, "أركـرون"],
-        ["225/50ZR17 98W XL", 145, "هانمكس"],
-        ["225/55ZR17 97W", 150, "أركـرون"],
-        ["225/55ZR17 101W", 150, "أركـرون"],
-        ["225/60R17 99V", 155, "ريدانز"],
-        ["225/65R17 102H", 165, "ريدانز"],
-        ["235/55R17 99V", 165, "ريدانز"],
-        ["235/65R17 108H", 175, "سيف ريتش"],
-        ["245/65R17 111H", 195, "سيف ريتش"],
-        ["245/65R17 111H", 195, "هانمكس"],
-        ["245/75R17 121/118S", 310, "ريدانز"],
-        ["265/65R17 112S", 220, "واندا"],
-        ["265/70R17 115T", 225, "سيف ريتش"],
-        ["265/70R17 115T", 225, "ريدانز"],
-        ["275/65R17 115T", 225, "واندا"],
-        ["285/65R17 116T", 245, "واندا"],
-        ["225/40ZR18 92W", 140, "أركـرون"],
-        ["235/45ZR18 98W XL", 150, "ريدانز"],
-        ["235/50ZR18 101W", 170, "سيف ريتش"],
-        ["235/50ZR18 101W XL", 170, "واندا"],
-        ["235/55R18 104V XL", 175, "هانمكس"],
-        ["235/55R18 104V XL", 175, "هانمكس"],
-        ["235/60R18 107H", 190, "سيف ريتش"],
-        ["245/45ZR18 100W XL", 160, "هانمكس"],
-        ["245/50ZR18 104W XL", 200, "ريدانز"],
-        ["255/70R18 113H", 240, "واندا"],
-        ["265/65R18 114H", 240, "واندا"],
-        ["265/65R18 114H", 235, "هانمكس"],
-        ["275/65R18 116H", 240, "واندا"],
-        ["285/60R18 116", 240, "واندا"],
-        ["225/45ZR19 96W XL", 155, "واندا"],
-        ["225/45ZR19 96W", 155, "سيف ريتش"],
-        ["235/50ZR19 103W XL", 220, "ريدانز"],
-        ["235/55R19 101W", 190, "هانمكس"],
-        ["235/55R19 101V", 190, "سيف ريتش"],
-        ["245/40ZR19 98W", 180, "سيف ريتش"],
-        ["245/45ZR19 102W", 180, "سيف ريتش"],
-        ["245/55R19 103V", 190, "أركـرون"],
-        ["265/55R19 109V", 240, "هانمكس"],
-        ["275/35ZR19 96W", 240, "ريدانز"],
-        ["275/40ZR19 101Y", 240, "ريدانز"],
-        ["245/40R20", 190, "سنتارا"],
-        ["245/45R20 91V", 190, "أركـرون"],
-        ["245/50R20", 220, "سيف ريتش"],
-        ["245/50ZR20 105W XL", 220, "واندا"],
-        ["245/50ZR20 105W XL", 220, "هانمكس"],
-        ["255/50R20 109V XL", 225, "ريدانز"],
-        ["265/55R20 113V XL", 260, "هانمكس"],
-        ["275/35R20", 210, "سنتارا"],
-        ["275/50R20", 285, "سنتارا"],
-        ["275/55R20", 285, "سنتارا"],
-        ["275/60R20", 290, "سنتارا"],
-        ["285/50R20 116V", 260, "هانمكس"],
-        ["285/50R20 116V XL", 260, "واندا"],
-        ["285/50R20 116V XL", 260, "هانمكس"],
-        ["285/45R22 114V XL", 280, "ريدانز"],
-        ["275/50R22", 300, "سنتارا"]
-    ];
+    // ============================================================
+    //  قاعدة البيانات
+    // ============================================================
+    let data = [];
 
-    // ===== باقي الكود (بدون تغيير) =====
-    const input = document.getElementById('searchInput');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const resultsList = document.getElementById('resultsList');
-    const matchesInfo = document.getElementById('matchesInfo');
-    const notFoundDiv = document.getElementById('notFound');
+    // ============================================================
+    //  تحميل البيانات من Local Storage
+    // ============================================================
+    function loadData() {
+        const saved = localStorage.getItem('tireData');
+        if (saved) {
+            try {
+                data = JSON.parse(saved);
+            } catch (e) {
+                data = [];
+            }
+        }
+        if (!data || data.length === 0) {
+            // بيانات افتراضية
+            data = [
+                ["195/65R15 91H", 115, "هانمكس", 5, "2025"],
+                ["205/55R16 91V", 115, "هانمكس", 0, "2026"],
+                ["205/55R16 91V", 115, "أركـرون", 0, "2026"],
+                ["215/60R16 95H", 125, "هانمكس", 6, "2025"],
+                ["245/40R20", 190, "سنتارا", 0, "2026"],
+                ["275/50R22", 300, "سنتارا", 0, "2026"]
+            ];
+        }
+        saveData();
+    }
 
+    function saveData() {
+        localStorage.setItem('tireData', JSON.stringify(data));
+    }
+
+    // ============================================================
+    //  دوال مساعدة
+    // ============================================================
     function getNumbers(str) {
         return str.replace(/[^0-9]/g, '');
     }
@@ -308,87 +175,292 @@
         return 'brand-default';
     }
 
-    function displayResults(matches, query) {
-        if (matches.length === 0) {
-            resultsContainer.classList.remove('show');
-            notFoundDiv.style.display = 'block';
-            notFoundDiv.textContent = '✖ لا يوجد مقاس يحتوي على: ' + query;
+    function getStockClass(q) {
+        if (q > 10) return 'stock-high';
+        if (q > 5) return 'stock-medium';
+        if (q > 0) return 'stock-low';
+        return 'stock-zero';
+    }
+
+    function getStockText(q) {
+        if (q === 0) return '🆕 جديد 2026 (بدون كميات)';
+        if (q > 10) return '📦 متوفر بكثرة (' + q + ')';
+        if (q > 5) return '📦 متوفر (' + q + ')';
+        if (q > 0) return '⚠️ كمية محدودة (' + q + ')';
+        return '❌ غير متوفر';
+    }
+
+    // ============================================================
+    //  عرض النتائج
+    // ============================================================
+    function displayResults(matches) {
+        const container = document.getElementById('searchResults');
+        const notFound = document.getElementById('notFound');
+        if (!container) return;
+        
+        if (!matches || matches.length === 0) {
+            container.innerHTML = '';
+            notFound.style.display = 'block';
             return;
         }
-
-        notFoundDiv.style.display = 'none';
-        resultsContainer.classList.add('show');
-
-        if (matches.length === 1) {
-            matchesInfo.textContent = '✅ تم العثور على نتيجة واحدة';
-        } else {
-            matchesInfo.textContent = '🔄 تم العثور على ' + matches.length + ' نتيجة للمقاسات المتشابهة:';
-        }
-
-        let html = '';
+        notFound.style.display = 'none';
+        let html = '<div class="search-result-count">🔍 تم العثور على ' + matches.length + ' نتيجة</div>';
         matches.forEach((item, index) => {
             const brandClass = getBrandClass(item[2]);
             const basePrice = item[1];
             const vatPrice = Math.round(basePrice * 1.15);
-
+            const stockClass = getStockClass(item[3]);
+            const stockText = getStockText(item[3]);
+            const yearDisplay = item[4] === '2026' ? '🆕 جديد' : '📅 ' + item[4];
             html += `
                 <div class="result-item">
                     <span class="size">${index+1}. ${item[0]}</span>
-                    <span class="brand"><span class="badge ${brandClass}">${item[2]}</span></span>
+                    <span class="brand">
+                        <span class="badge ${brandClass}">${item[2]}</span>
+                        <span class="year-badge">${yearDisplay}</span>
+                    </span>
                     <span class="price-box">
-                        <div class="price-base">💰 ${basePrice} ريال (قبل الضريبة)</div>
+                        <div class="price-base">💰 ${basePrice} ريال</div>
                         <div class="price-vat">🛒 شامل 15%: ${vatPrice} ريال</div>
+                        <div class="stock-badge ${stockClass}">${stockText}</div>
+                        <div style="margin-top:6px;">
+                            <button class="action-btn sell" onclick="sellItem(${index})">🔻 بيع</button>
+                            <button class="action-btn add" onclick="addStock(${index})">➕ إضافة</button>
+                            <button class="action-btn edit" onclick="openEditModal(${index})">✏️ تعديل</button>
+                            <button class="action-btn delete" onclick="deleteItem(${index})">🗑️ حذف</button>
+                        </div>
                     </span>
                 </div>
             `;
         });
-        resultsList.innerHTML = html;
+        container.innerHTML = html;
     }
 
+    // ============================================================
+    //  محرك البحث - التصحيح الأساسي
+    // ============================================================
     function searchTire() {
+        const input = document.getElementById('searchInput');
+        if (!input) return;
+        
         const query = input.value.trim();
+        const container = document.getElementById('searchResults');
+        const notFound = document.getElementById('notFound');
+        
         if (!query) {
-            resultsContainer.classList.remove('show');
-            notFoundDiv.style.display = 'none';
+            if (container) container.innerHTML = '';
+            if (notFound) notFound.style.display = 'none';
             return;
         }
 
-        let exactMatches = data.filter(item => item[0] === query);
-        if (exactMatches.length > 0) {
-            displayResults(exactMatches, query);
-            return;
-        }
-
-        const queryDigits = getNumbers(query);
-        if (queryDigits.length === 0) {
-            resultsContainer.classList.remove('show');
-            notFoundDiv.style.display = 'block';
-            notFoundDiv.textContent = '✖ الرجاء كتابة أرقام فقط';
-            return;
-        }
-
-        let partialMatches = data.filter(item => {
-            const itemDigits = getNumbers(item[0]);
-            return itemDigits.includes(queryDigits);
+        // بحث بالمطابقة الجزئية (أي مقاس يحتوي على النص المكتوب)
+        const matches = data.filter(item => {
+            return item[0].includes(query);
         });
 
-        partialMatches.sort((a, b) => a[0].localeCompare(b[0]));
-
-        if (partialMatches.length > 0) {
-            displayResults(partialMatches, queryDigits);
+        if (matches.length > 0) {
+            displayResults(matches);
         } else {
-            resultsContainer.classList.remove('show');
-            notFoundDiv.style.display = 'block';
-            notFoundDiv.textContent = '✖ لا يوجد مقاس يحتوي على الأرقام: ' + queryDigits;
+            if (container) container.innerHTML = '';
+            if (notFound) {
+                notFound.style.display = 'block';
+                notFound.textContent = '✖ لا يوجد مقاس يحتوي على: ' + query;
+            }
         }
     }
 
-    input.addEventListener('input', searchTire);
-    input.addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') searchTire();
+    // ============================================================
+    //  دوال أخرى (بيع، إضافة، تعديل، حذف)
+    // ============================================================
+    function sellItem(index) {
+        const item = data[index];
+        if (!item) return;
+        if (item[3] <= 0) {
+            alert('❌ هذا المقاس غير متوفر حالياً');
+            return;
+        }
+        const qty = prompt('كم حبة تريد بيعها من ' + item[0] + '؟ (المتوفرة: ' + item[3] + ')', '1');
+        if (qty === null) return;
+        const num = parseInt(qty);
+        if (isNaN(num) || num <= 0 || num > item[3]) {
+            alert('❌ كمية غير صالحة');
+            return;
+        }
+        data[index][3] -= num;
+        saveData();
+        searchTire();
+        renderInventory();
+        alert('✅ تم بيع ' + num + ' حبة');
+    }
+
+    function addStock(index) {
+        const item = data[index];
+        if (!item) return;
+        const qty = prompt('كم حبة تريد إضافتها إلى مخزون ' + item[0] + '؟', '1');
+        if (qty === null) return;
+        const num = parseInt(qty);
+        if (isNaN(num) || num <= 0) {
+            alert('❌ الرجاء إدخال عدد صحيح موجب');
+            return;
+        }
+        data[index][3] += num;
+        saveData();
+        searchTire();
+        renderInventory();
+        alert('✅ تم إضافة ' + num + ' حبة');
+    }
+
+    function deleteItem(index) {
+        if (!confirm('هل أنت متأكد من حذف ' + data[index][0] + ' نهائياً؟')) return;
+        data.splice(index, 1);
+        saveData();
+        searchTire();
+        renderInventory();
+    }
+
+    let editIndex = -1;
+    function openEditModal(index) {
+        editIndex = index;
+        document.getElementById('editModalTitle').textContent = '✏️ تعديل كمية: ' + data[index][0];
+        document.getElementById('editQuantity').value = data[index][3];
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function saveEdit() {
+        const newQty = parseInt(document.getElementById('editQuantity').value);
+        if (isNaN(newQty) || newQty < 0) {
+            alert('❌ الرجاء إدخال عدد صحيح غير سالب');
+            return;
+        }
+        data[editIndex][3] = newQty;
+        saveData();
+        closeModal();
+        searchTire();
+        renderInventory();
+        alert('✅ تم تحديث الكمية');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('active');
+    }
+
+    function addItem() {
+        const size = document.getElementById('newSize').value.trim();
+        const price = parseInt(document.getElementById('newPrice').value);
+        const brand = document.getElementById('newBrand').value.trim();
+        const qty = parseInt(document.getElementById('newQuantity').value);
+        const year = document.getElementById('newYear').value;
+        if (!size || isNaN(price) || !brand || isNaN(qty) || qty < 0) {
+            alert('❌ الرجاء تعبئة جميع الحقول بشكل صحيح');
+            return;
+        }
+        data.push([size, price, brand, qty, year]);
+        saveData();
+        document.getElementById('newSize').value = '';
+        document.getElementById('newPrice').value = '';
+        document.getElementById('newBrand').value = '';
+        document.getElementById('newQuantity').value = '';
+        renderInventory();
+        alert('✅ تم إضافة ' + size + ' بنجاح');
+    }
+
+    function renderInventory() {
+        const container = document.getElementById('inventoryList');
+        if (!container) return;
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="text-align:center;color:#6b7a8a;">📭 لا يوجد مقاسات في المخزون</p>';
+            return;
+        }
+        let html = `<table><thead><tr><th>#</th><th>المقاس</th><th>العلامة</th><th>السعر</th><th>الكمية</th><th>السنة</th><th>الإجراءات</th></tr></thead><tbody>`;
+        data.forEach((item, i) => {
+            const brandClass = getBrandClass(item[2]);
+            const stockClass = getStockClass(item[3]);
+            html += `<tr>
+                <td>${i+1}</td>
+                <td>${item[0]}</td>
+                <td><span class="badge ${brandClass}">${item[2]}</span></td>
+                <td>${item[1]} ريال</td>
+                <td><span class="stock-badge ${stockClass}">${item[3]}</span></td>
+                <td><span class="year-badge">${item[4]}</span></td>
+                <td>
+                    <button class="action-btn sell" onclick="sellItem(${i})">🔻 بيع</button>
+                    <button class="action-btn add" onclick="addStock(${i})">➕ إضافة</button>
+                    <button class="action-btn edit" onclick="openEditModal(${i})">✏️</button>
+                    <button class="action-btn delete" onclick="deleteItem(${i})">🗑️</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function renderSales() {
+        const container = document.getElementById('salesList');
+        if (!container) return;
+        container.innerHTML = '<p style="text-align:center;color:#6b7a8a;">📭 سجل المبيعات قيد التطوير</p>';
+    }
+
+    function clearSales() {
+        alert('🗑️ سيتم مسح سجل المبيعات قريباً');
+    }
+
+    function exportData() {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tire_data_' + new Date().toISOString().slice(0,10) + '.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('📥 تم تصدير البيانات كملف JSON');
+    }
+
+    function showTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        const target = document.getElementById('tab-' + tab);
+        if (target) target.classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => {
+            if (el.textContent.includes('بحث') && tab === 'search') el.classList.add('active');
+            if (el.textContent.includes('إضافة') && tab === 'add') el.classList.add('active');
+            if (el.textContent.includes('المخزون') && tab === 'inventory') el.classList.add('active');
+            if (el.textContent.includes('المبيعات') && tab === 'sales') el.classList.add('active');
+        });
+        if (tab === 'inventory') renderInventory();
+        if (tab === 'sales') renderSales();
+        if (tab === 'search') {
+            const input = document.getElementById('searchInput');
+            if (input) input.focus();
+        }
+    }
+
+    // ============================================================
+    //  تهيئة الصفحة
+    // ============================================================
+    loadData();
+    renderInventory();
+    renderSales();
+
+    // ربط محرك البحث
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', searchTire);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') searchTire();
+        });
+        // تنفيذ البحث فوراً إذا كان هناك نص
+        if (searchInput.value.trim()) {
+            searchTire();
+        }
+    }
+
+    // إغلاق المودال عند الضغط خارجها
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
     });
 
-    input.focus();
+    console.log('✅ النظام جاهز، عدد المقاسات: ' + data.length);
 </script>
 </body>
 </html>
