@@ -62,6 +62,11 @@
         .brand-default { background: #607d8b; }
         .table-actions { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
         .table-actions button { padding: 4px 10px; font-size: 12px; }
+        /* أزرار تصفية السنوات */
+        .filter-buttons { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 18px; border: 2px solid #d1d9e6; border-radius: 20px; background: white; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .filter-btn.active { background: #1a3a5c; color: white; border-color: #1a3a5c; }
+        .filter-btn:hover { background: #e8edf3; }
     </style>
 </head>
 <body>
@@ -103,6 +108,13 @@
 
     <div id="tab-inventory" class="tab-content">
         <h3 style="margin-bottom:15px;">📦 جميع المقاسات</h3>
+        <!-- أزرار التصفية حسب السنة -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterInventory('all')">📋 الكل</button>
+            <button class="filter-btn" onclick="filterInventory('2024')">📅 2024</button>
+            <button class="filter-btn" onclick="filterInventory('2025')">📅 2025</button>
+            <button class="filter-btn" onclick="filterInventory('2026')">📅 2026 (جديد)</button>
+        </div>
         <div id="inventoryList"></div>
     </div>
 
@@ -260,6 +272,7 @@
     //  التطبيق
     // ============================================================
     let tireData = [];
+    let currentFilter = 'all'; // 'all', '2024', '2025', '2026'
 
     function loadData() {
         const saved = localStorage.getItem('tireData');
@@ -299,6 +312,9 @@
         return '❌ غير متوفر';
     }
 
+    // ============================================================
+    //  عرض النتائج (البحث)
+    // ============================================================
     function displayResults(matches) {
         const container = document.getElementById('searchResults');
         const notFound = document.getElementById('notFound');
@@ -365,6 +381,63 @@
         }
     }
 
+    // ============================================================
+    //  عرض المخزون مع التصفية حسب السنة
+    // ============================================================
+    function filterInventory(year) {
+        currentFilter = year;
+        // تحديث حالة الأزرار
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.includes(year) || (year === 'all' && btn.textContent.includes('الكل'))) {
+                btn.classList.add('active');
+            }
+        });
+        renderInventory();
+    }
+
+    function renderInventory() {
+        const container = document.getElementById('inventoryList');
+        if (!container) return;
+        
+        let filteredData = tireData;
+        if (currentFilter !== 'all') {
+            filteredData = tireData.filter(item => item[4] === currentFilter);
+        }
+
+        if (!filteredData || filteredData.length === 0) {
+            container.innerHTML = `<p style="text-align:center;color:#6b7a8a;">📭 لا يوجد مقاسات في المخزون للموديل ${currentFilter === 'all' ? '' : currentFilter}</p>`;
+            return;
+        }
+
+        let html = `<table><thead><tr><th>#</th><th>المقاس</th><th>العلامة</th><th>السعر</th><th>الكمية</th><th>السنة</th><th>الإجراءات</th></tr></thead><tbody>`;
+        filteredData.forEach((item, i) => {
+            // نبحث عن الرقم التسلسلي الأصلي في الـ data الكامل (لضمان عمل أزرار البيع بشكل صحيح)
+            const globalIndex = tireData.indexOf(item);
+            const brandClass = getBrandClass(item[2]);
+            const stockClass = getStockClass(item[3]);
+            html += `<tr>
+                <td>${i+1}</td>
+                <td>${item[0]}</td>
+                <td><span class="badge ${brandClass}">${item[2]}</span></td>
+                <td>${item[1]} ريال</td>
+                <td><span class="stock-badge ${stockClass}">${item[3]}</span></td>
+                <td><span class="year-badge">${item[4]}</span></td>
+                <td class="table-actions">
+                    <button class="action-btn sell" onclick="sellItem(${globalIndex})">🔻 بيع</button>
+                    <button class="action-btn add" onclick="addStock(${globalIndex})">➕ إضافة</button>
+                    <button class="action-btn edit" onclick="openEditModal(${globalIndex})">✏️</button>
+                    <button class="action-btn delete" onclick="deleteItem(${globalIndex})">🗑️</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    //  عمليات المخزون (بيع، إضافة، تعديل، حذف)
+    // ============================================================
     function sellItem(index) {
         const item = tireData[index];
         if (!item) return;
@@ -437,6 +510,9 @@
         document.getElementById('editModal').classList.remove('active');
     }
 
+    // ============================================================
+    //  إضافة مقاس جديد
+    // ============================================================
     function addItem() {
         const size = document.getElementById('newSize').value.trim();
         const price = parseInt(document.getElementById('newPrice').value);
@@ -457,36 +533,9 @@
         alert('✅ تم إضافة ' + size + ' بنجاح');
     }
 
-    function renderInventory() {
-        const container = document.getElementById('inventoryList');
-        if (!container) return;
-        if (!tireData || tireData.length === 0) {
-            container.innerHTML = '<p style="text-align:center;color:#6b7a8a;">📭 لا يوجد مقاسات في المخزون</p>';
-            return;
-        }
-        let html = `<table><thead><tr><th>#</th><th>المقاس</th><th>العلامة</th><th>السعر</th><th>الكمية</th><th>السنة</th><th>الإجراءات</th></tr></thead><tbody>`;
-        tireData.forEach((item, i) => {
-            const brandClass = getBrandClass(item[2]);
-            const stockClass = getStockClass(item[3]);
-            html += `<tr>
-                <td>${i+1}</td>
-                <td>${item[0]}</td>
-                <td><span class="badge ${brandClass}">${item[2]}</span></td>
-                <td>${item[1]} ريال</td>
-                <td><span class="stock-badge ${stockClass}">${item[3]}</span></td>
-                <td><span class="year-badge">${item[4]}</span></td>
-                <td class="table-actions">
-                    <button class="action-btn sell" onclick="sellItem(${i})">🔻 بيع</button>
-                    <button class="action-btn add" onclick="addStock(${i})">➕ إضافة</button>
-                    <button class="action-btn edit" onclick="openEditModal(${i})">✏️</button>
-                    <button class="action-btn delete" onclick="deleteItem(${i})">🗑️</button>
-                </td>
-            </tr>`;
-        });
-        html += '</tbody></table>';
-        container.innerHTML = html;
-    }
-
+    // ============================================================
+    //  عرض المبيعات
+    // ============================================================
     function renderSales() {
         const container = document.getElementById('salesList');
         if (!container) return;
@@ -497,6 +546,9 @@
         alert('🗑️ سيتم مسح سجل المبيعات قريباً');
     }
 
+    // ============================================================
+    //  تصدير البيانات
+    // ============================================================
     function exportData() {
         const json = JSON.stringify(tireData, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
@@ -509,6 +561,9 @@
         alert('📥 تم تصدير البيانات كملف JSON');
     }
 
+    // ============================================================
+    //  التبويبات
+    // ============================================================
     function showTab(tab) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         const target = document.getElementById('tab-' + tab);
