@@ -125,40 +125,37 @@
     </div>
 </div>
 
-<!-- ===== تحميل ملف البيانات ===== -->
 <script src="data.js"></script>
 
 <script>
     // ============================================================
-    //  تحميل البيانات من Local Storage أو من data.js
+    //  تحميل البيانات
     // ============================================================
+    let tireData = [];
+
     function loadData() {
         const saved = localStorage.getItem('tireData');
         if (saved) {
             try {
-                window.tireData = JSON.parse(saved);
+                tireData = JSON.parse(saved);
                 return;
             } catch (e) {}
         }
         if (typeof defaultTireData !== 'undefined' && defaultTireData.length > 0) {
-            window.tireData = JSON.parse(JSON.stringify(defaultTireData));
+            tireData = JSON.parse(JSON.stringify(defaultTireData));
         } else {
-            window.tireData = [];
+            tireData = [];
         }
         saveData();
     }
 
     function saveData() {
-        localStorage.setItem('tireData', JSON.stringify(window.tireData));
+        localStorage.setItem('tireData', JSON.stringify(tireData));
     }
 
     // ============================================================
     //  دوال مساعدة
     // ============================================================
-    function getNumbers(str) {
-        return str.replace(/[^0-9]/g, '');
-    }
-
     function getBrandClass(brand) {
         if (brand.includes('هانمكس')) return 'brand-hanmks';
         if (brand.includes('واندا')) return 'brand-wanda';
@@ -199,7 +196,7 @@
         notFound.style.display = 'none';
         let html = '<div class="search-result-count">🔍 تم العثور على ' + matches.length + ' نتيجة</div>';
         matches.forEach((item, index) => {
-            const globalIndex = window.tireData.indexOf(item);
+            const globalIndex = tireData.indexOf(item);
             const brandClass = getBrandClass(item[2]);
             const basePrice = item[1];
             const vatPrice = Math.round(basePrice * 1.15);
@@ -244,8 +241,7 @@
             if (notFound) notFound.style.display = 'none';
             return;
         }
-        const data = window.tireData || [];
-        const matches = data.filter(item => item[0].includes(query));
+        const matches = tireData.filter(item => item[0].includes(query));
         if (matches.length > 0) {
             displayResults(matches);
         } else {
@@ -261,11 +257,10 @@
     //  عمليات المخزون
     // ============================================================
     function sellItem(index) {
-        const data = window.tireData;
-        const item = data[index];
+        const item = tireData[index];
         if (!item) return;
         if (item[3] <= 0) {
-            alert('❌ هذا المقاس غير متوفر حالياً (الكمية صفر)');
+            alert('❌ هذا المقاس غير متوفر حالياً');
             return;
         }
         const qty = prompt('كم حبة تريد بيعها من ' + item[0] + '؟ (المتوفرة: ' + item[3] + ')', '1');
@@ -275,7 +270,7 @@
             alert('❌ كمية غير صالحة');
             return;
         }
-        data[index][3] -= num;
+        tireData[index][3] -= num;
         saveData();
         searchTire();
         renderInventory();
@@ -283,8 +278,7 @@
     }
 
     function addStock(index) {
-        const data = window.tireData;
-        const item = data[index];
+        const item = tireData[index];
         if (!item) return;
         const qty = prompt('كم حبة تريد إضافتها إلى مخزون ' + item[0] + '؟', '1');
         if (qty === null) return;
@@ -293,7 +287,7 @@
             alert('❌ الرجاء إدخال عدد صحيح موجب');
             return;
         }
-        data[index][3] += num;
+        tireData[index][3] += num;
         saveData();
         searchTire();
         renderInventory();
@@ -301,9 +295,8 @@
     }
 
     function deleteItem(index) {
-        const data = window.tireData;
-        if (!confirm('هل أنت متأكد من حذف ' + data[index][0] + ' نهائياً؟')) return;
-        data.splice(index, 1);
+        if (!confirm('هل أنت متأكد من حذف ' + tireData[index][0] + ' نهائياً؟')) return;
+        tireData.splice(index, 1);
         saveData();
         searchTire();
         renderInventory();
@@ -312,20 +305,18 @@
     let editIndex = -1;
     function openEditModal(index) {
         editIndex = index;
-        const data = window.tireData;
-        document.getElementById('editModalTitle').textContent = '✏️ تعديل كمية: ' + data[index][0];
-        document.getElementById('editQuantity').value = data[index][3];
+        document.getElementById('editModalTitle').textContent = '✏️ تعديل كمية: ' + tireData[index][0];
+        document.getElementById('editQuantity').value = tireData[index][3];
         document.getElementById('editModal').classList.add('active');
     }
 
     function saveEdit() {
-        const data = window.tireData;
         const newQty = parseInt(document.getElementById('editQuantity').value);
         if (isNaN(newQty) || newQty < 0) {
             alert('❌ الرجاء إدخال عدد صحيح غير سالب');
             return;
         }
-        data[editIndex][3] = newQty;
+        tireData[editIndex][3] = newQty;
         saveData();
         closeModal();
         searchTire();
@@ -341,7 +332,6 @@
     //  إضافة مقاس جديد
     // ============================================================
     function addItem() {
-        const data = window.tireData;
         const size = document.getElementById('newSize').value.trim();
         const price = parseInt(document.getElementById('newPrice').value);
         const brand = document.getElementById('newBrand').value.trim();
@@ -351,7 +341,7 @@
             alert('❌ الرجاء تعبئة جميع الحقول بشكل صحيح');
             return;
         }
-        data.push([size, price, brand, qty, year]);
+        tireData.push([size, price, brand, qty, year]);
         saveData();
         document.getElementById('newSize').value = '';
         document.getElementById('newPrice').value = '';
@@ -367,13 +357,12 @@
     function renderInventory() {
         const container = document.getElementById('inventoryList');
         if (!container) return;
-        const data = window.tireData || [];
-        if (!data || data.length === 0) {
+        if (!tireData || tireData.length === 0) {
             container.innerHTML = '<p style="text-align:center;color:#6b7a8a;">📭 لا يوجد مقاسات في المخزون</p>';
             return;
         }
         let html = `<table><thead><tr><th>#</th><th>المقاس</th><th>العلامة</th><th>السعر</th><th>الكمية</th><th>السنة</th><th>الإجراءات</th></tr></thead><tbody>`;
-        data.forEach((item, i) => {
+        tireData.forEach((item, i) => {
             const brandClass = getBrandClass(item[2]);
             const stockClass = getStockClass(item[3]);
             html += `<tr>
@@ -412,8 +401,7 @@
     //  تصدير البيانات
     // ============================================================
     function exportData() {
-        const data = window.tireData || [];
-        const json = JSON.stringify(data, null, 2);
+        const json = JSON.stringify(tireData, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -424,4 +412,12 @@
         alert('📥 تم تصدير البيانات كملف JSON');
     }
 
-    // =========================
+    // ============================================================
+    //  التبويبات
+    // ============================================================
+    function showTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        const target = document.getElementById('tab-' + tab);
+        if (target) target.classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.querySe
